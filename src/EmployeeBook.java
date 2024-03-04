@@ -1,16 +1,9 @@
 public class EmployeeBook {
-    private Employee[] ep;
+    private final Employee[] ep;
 
 
     EmployeeBook() {
         this.ep = new Employee[10];
-//        ep[0] = new Employee("Ivanov Ivan Ivanovich", 150400, 1);
-//        ep[1] = new Employee("Ivanov Ivan Ivanovich", 150400, 1);
-//        ep[7] = new Employee("Petrov Petr Petrovich", 67000, 4);
-//        ep[3] = new Employee("Sidorov Sidr Sidorovich", 120000, 3);
-//        ep[4] = new Employee("Egorov Egor Egorovich", 200000, 4);
-//        ep[8] = new Employee("Lastname Firstname Middlenamovich", 180904, 5);
-//        ep[6] = new Employee("Morozov Moroz Morozovich", 68000, 3);
     }
 
 
@@ -25,36 +18,38 @@ public class EmployeeBook {
                 if (ep[j] == null) {
                     continue;
                 }
-                if (ep[i].hashCode() == ep[j].hashCode()) {
-                    if (ep[i].equals(ep[j])) {
-                        repeatEmployee = ep[j].getFullName();
-                    }
+                if (ep[i].hashCode() == ep[j].hashCode() && ep[i].equals(ep[j])) {
+                    repeatEmployee = ep[j].getFullName();
+                    System.out.println("В книге под разными id, повторяется сотрудник: " + repeatEmployee);
+                    break;
                 }
             }
-        }
-        System.out.println("В книге под разными id, повторяется сотрудник: " + repeatEmployee);
-    }
-
-    public void printInfo(String overFlow) {
-        if (overFlow == null) {
-            System.out.println("Места нет");
-        } else {
-            System.out.println("Добавлен новый сотрудник " + overFlow);
-        }
-    }
-
-    public Employee[] getAllEmployee() {
-        return ep;
-    }
-
-    public String addNewEmployee(Employee newEp) {
-        for (int i = 0; i < ep.length; i++) {
-            if (ep[i] == null) {
-                ep[i] = newEp;
-                return ep[i].getFullName();
+            if (repeatEmployee != null) {
+                break;
             }
         }
-        return null;
+    }
+
+    public void addNewEmployee(Employee newEp) {
+        int numberEmployee = 0;
+        for (; numberEmployee < ep.length; numberEmployee++) {
+            if (ep[numberEmployee] == null) {
+                ep[numberEmployee] = newEp;
+                printInfo(numberEmployee);
+                break;
+            }
+        }
+        if (numberEmployee == ep.length) {
+            printInfo(numberEmployee);
+        }
+    }
+
+    private void printInfo(int numberEmployee) {
+        if (numberEmployee == ep.length) {
+            System.out.println("Места нет");
+        } else {
+            System.out.println("Добавлен новый сотрудник " + ep[numberEmployee].getFullName());
+        }
     }
 
     public void removeEmployee(int id) {
@@ -65,22 +60,34 @@ public class EmployeeBook {
             if (ep[i].getId() == id) {
                 System.out.println("Удален сотрудник " + ep[i].getFullName());
                 ep[i] = null;
+                break;
             }
         }
     }
 
-    public void printEmployeeId(int id) {
+    private String findEmployeeId(int id) {
         for (int i = 0; i < ep.length; i++) {
             if (ep[i] == null) {
                 continue;
             }
             if (ep[i].getId() == id) {
-                System.out.println("Под id " + id + ", находится сотрудник - " + ep[i].getFullName());
+                return ep[i].getFullName();
             }
+        }
+        return null;
+    }
+
+    public void printEmployeeId(int id) {
+        String nameId = null;
+        nameId = findEmployeeId(id);
+        if (nameId == null) {
+            System.out.println("Сотрудник под id " + id + ", не найден");
+        } else {
+            System.out.println("Под id " + id + ", находится сотрудник - " + nameId);
         }
     }
 
-    public void printAllDataEmployee(Employee[] ep) {
+    public void printAllDataEmployee() {
         for (int i = 0; i < ep.length; i++) {
             if (ep[i] == null) {
                 continue;
@@ -90,23 +97,36 @@ public class EmployeeBook {
         }
     }
 
-    public void printSalaryMonth(Employee[] ep) {
+    //
+    public double countSalaryMonth() {
         double allSalaryMonth = 0;
-        double averageSalary = 0;
         for (int i = 0; i < ep.length; i++) {
             if (ep[i] == null) {
                 continue;
             }
             allSalaryMonth += ep[i].getSalary();
-            averageSalary++;
         }
-        System.out.println("Сумма затрат на ЗП в месяц: " + allSalaryMonth);
-        System.out.println("Среднее значение зарплат в месяц: " + allSalaryMonth / averageSalary);
+        return allSalaryMonth;
     }
 
-    public void printSalaryMin(Employee[] ep) {
+    public double countAverageSalaryMonth(double allSalaryMonth) {
+        int averageSalary = 0;
+        for (int i = 0; i < ep.length; i++) {
+            if (ep[i] == null) {
+                continue;
+            }
+            averageSalary++;
+        }
+        if (averageSalary != 0) {
+            return allSalaryMonth / averageSalary;
+        } else {
+            return 0;
+        }
+    }
+
+    public String countSalaryMin() {
         double minSalary = Double.MAX_VALUE;
-        String employeeMinSalary = "";
+        String employeeMinSalary = null;
         for (int i = 0; i < ep.length; i++) {
             if (ep[i] == null) {
                 continue;
@@ -116,10 +136,10 @@ public class EmployeeBook {
                 employeeMinSalary = ep[i].getFullName();
             }
         }
-        System.out.println("У сотрудника " + employeeMinSalary + " ммнимальная зарплата - " + minSalary);
+        return "У сотрудника " + employeeMinSalary + " ммнимальная зарплата - " + minSalary;
     }
 
-    public void printSalaryMax(Employee[] ep) {
+    public String printSalaryMax() {
         double maxSalary = 0;
         String employeeMaxSalary = "";
         for (int i = 0; i < ep.length; i++) {
@@ -131,10 +151,10 @@ public class EmployeeBook {
                 employeeMaxSalary = ep[i].getFullName();
             }
         }
-        System.out.println("У сотрудника " + employeeMaxSalary + " максимальная зарплата - " + maxSalary);
+        return "У сотрудника " + employeeMaxSalary + " максимальная зарплата - " + maxSalary;
     }
 
-    public void printNamesEmployee(Employee[] ep) {
+    public void printNamesEmployee() {
         for (int i = 0; i < ep.length; i++) {
             if (ep[i] == null) {
                 continue;
@@ -143,7 +163,7 @@ public class EmployeeBook {
         }
     }
 
-    public void printIndexSalary(Employee[] ep, double index) {
+    public void printIndexSalary(double index) {
         double indexSalary = 0;
         for (int i = 0; i < ep.length; i++) {
             if (ep[i] == null) {
@@ -156,7 +176,7 @@ public class EmployeeBook {
         }
     }
 
-    public void printSalaryMinIndex(Employee[] ep, int department) {
+    public String findSalaryMinIndex(int department) {
         double minSalary = Double.MAX_VALUE;
         String employeeMinSalary = "";
         for (int i = 0; i < ep.length; i++) {
@@ -170,10 +190,10 @@ public class EmployeeBook {
                 employeeMinSalary = ep[i].getFullName();
             }
         }
-        System.out.println("У сотрудника " + employeeMinSalary + " (" + department + " отдел)" + " минимальная зарплата - " + minSalary);
+        return "У сотрудника " + employeeMinSalary + " (" + department + " отдел)" + " минимальная зарплата - " + minSalary;
     }
 
-    public void printSalaryMaxIndex(Employee[] ep, int department) {
+    public String findSalaryMaxIndex(int department) {
         double maxSalary = 0;
         String employeeMaxSalary = "";
         for (int i = 0; i < ep.length; i++) {
@@ -185,10 +205,10 @@ public class EmployeeBook {
                 employeeMaxSalary = ep[i].getFullName();
             }
         }
-        System.out.println("У сотрудника " + employeeMaxSalary + " (" + department + " отдел)" + " максимальная зарплата - " + maxSalary);
+        return "У сотрудника " + employeeMaxSalary + " (" + department + " отдел)" + " максимальная зарплата - " + maxSalary;
     }
 
-    public void printSumSalaryDepartment(Employee[] ep, int department) {
+    public double countSumSalaryDepartment(int department) {
         double sumSalary = 0;
         for (int i = 0; i < ep.length; i++) {
             if (ep[i] == null) {
@@ -198,25 +218,28 @@ public class EmployeeBook {
                 sumSalary += ep[i].getSalary();
             }
         }
-        System.out.println("Сумма затрат на зп по " + department + " отделу " + sumSalary);
+        return sumSalary;
     }
 
-    public void printAverageSumSalaryDepartment(Employee[] ep, int department) {
-        double sumSalary = 0;
+    public double countAverageSumSalaryDepartment(double sumSalary, int department) {
         int averageCount = 0;
         for (int i = 0; i < ep.length; i++) {
             if (ep[i] == null) {
                 continue;
             }
             if (ep[i].getDepartment() == department) {
-                sumSalary += ep[i].getSalary();
                 averageCount++;
             }
         }
-        System.out.println("Средняя зп по " + department + " отделу " + sumSalary / averageCount);
+
+        if (averageCount != 0) {
+            return sumSalary / averageCount;
+        } else {
+            return 0;
+        }
     }
 
-    public void printIndexSalaryDepartment(Employee[] ep, double indexDepartment, int department) {
+    public void printIndexSalaryDepartment(double indexDepartment, int department) {
         double indexSalaryDepartment = 0;
         for (int i = 0; i < ep.length; i++) {
             if (ep[i] == null) {
@@ -231,7 +254,7 @@ public class EmployeeBook {
         }
     }
 
-    public void printAllDataEmployeeDepartment(Employee[] ep, int department) {
+    public void printAllDataEmployeeDepartment(int department) {
         double indexSalaryDepartment = 0;
         for (int i = 0; i < ep.length; i++) {
             if (ep[i] == null) {
@@ -243,7 +266,7 @@ public class EmployeeBook {
         }
     }
 
-    public void printEmployeeLessThan(Employee[] ep, double less) {
+    public void printEmployeeLessThan(double less) {
         for (int i = 0; i < ep.length; i++) {
             if (ep[i] == null) {
                 continue;
@@ -256,7 +279,7 @@ public class EmployeeBook {
 
     }
 
-    public void printEmployeeMoreThan(Employee[] ep, double more) {
+    public void printEmployeeMoreThan(double more) {
         for (int i = 0; i < ep.length; i++) {
             if (ep[i] == null) {
                 continue;
@@ -267,4 +290,5 @@ public class EmployeeBook {
         }
     }
 }
+
 
